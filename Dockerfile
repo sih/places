@@ -1,6 +1,5 @@
 FROM openjdk:8-jdk-alpine
+LABEL maintainer="http://github.com/sih"
 VOLUME /tmp
-VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+ADD target/places-0.1.0.jar target/places.jar
+ENTRYPOINT ["java","-jar","-Dspring.profiles.active=local","target/places.jar"]
