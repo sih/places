@@ -1,5 +1,6 @@
 scripts
 target/
+src/main/reources/application.yml
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
