@@ -27,15 +27,16 @@ This is a "Hello, World!" toy microservices project. Currently it uses:
 * Use the Spotify Maven plugin to build the application
   * `mvn clean install dockerfile:build`
 * Start a MySql Docker service, passing the root and application credentials
+
   ```
-    docker run --rm -t --name placesServer \
-        --link placesMySql:mysql \
-        -p 8097:8097 \
-        dsoc/places \
-        --spring.datasource.url=jdbc:mysql://docker.for.mac.host.internal:8306/places \
-        --spring.datasource.username=<usr> \
-        --spring.datasource.password=<psw>
-      ``` 
+   docker run -d -p 8306:3306 \
+       --name placesMySql \
+        -e MYSQL_ROOT_PASSWORD=<root-psw> \
+        -e MYSQL_DATABASE=places \
+        -e MYSQL_USER=<usr> \
+        -e MYSQL_PASSWORD=<psw> \
+        dsoc/places-mysql:latest
+  ``` 
      
 * Some things to note:
    * The MySql Docker image also has a schema and some sample data
