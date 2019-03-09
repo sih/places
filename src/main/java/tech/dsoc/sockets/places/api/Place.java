@@ -1,5 +1,8 @@
-package tech.dsoc.sockets.places.tech.dsoc.sockets.places.api;
+package tech.dsoc.sockets.places.api;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,9 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "places")
+@Getter
+@Setter
+@Slf4j
 public class Place implements Serializable {
 
     private static final long serialVersionUID = 8556874861318791324L;
@@ -42,10 +48,10 @@ public class Place implements Serializable {
     private String countryName;
 
     @Column
-    private double latitude;
+    private Double latitude;
 
     @Column
-    private double longitude;
+    private Double longitude;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Place.class);
 
@@ -68,51 +74,4 @@ public class Place implements Serializable {
         return Objects.hash(id, cityName, stateName, countryName, latitude, longitude);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    public String getStateName() {
-        return stateName;
-    }
-
-    public void setStateName(String stateName) {
-        this.stateName = stateName;
-    }
-
-    public String getCountryName() {
-        return countryName;
-    }
-
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
 }
