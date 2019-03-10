@@ -1,17 +1,22 @@
 package tech.dsoc.sockets.places.api;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.GenericGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
+ * This is a domain object tied to the places table.<p/>
+ * One place is considered the same as another if and only if they share the same:
+ * <ul>
+ *     <li>cityName</li>
+ *     <li>countryName</li>
+ *     <li>latitude</li>
+ *     <li>longitude</li>
+ * </ul>
+ *
  * @author sih
  */
 @Entity
@@ -19,6 +24,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @Slf4j
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class Place implements Serializable {
 
     private static final long serialVersionUID = 8556874861318791324L;
@@ -39,39 +46,22 @@ public class Place implements Serializable {
     private Long id;
 
     @Column
+    @EqualsAndHashCode.Include
     private String cityName;
 
     @Column
     private String stateName;
 
     @Column
+    @EqualsAndHashCode.Include
     private String countryName;
 
     @Column
+    @EqualsAndHashCode.Include
     private Double latitude;
 
     @Column
+    @EqualsAndHashCode.Include
     private Double longitude;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Place.class);
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Place place = (Place) o;
-        return Double.compare(place.latitude, latitude) == 0 &&
-                Double.compare(place.longitude, longitude) == 0 &&
-                Objects.equals(id, place.id) &&
-                Objects.equals(cityName, place.cityName) &&
-                Objects.equals(stateName, place.stateName) &&
-                Objects.equals(countryName, place.countryName);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, cityName, stateName, countryName, latitude, longitude);
-    }
 
 }

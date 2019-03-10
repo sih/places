@@ -58,18 +58,19 @@ public class PlacesController {
             if (place != null) {
                 if (StringUtils.isEmpty(place.getCityName())) {
                     errors.add("You need to supply a city name, e.g. London");
-                } else if (StringUtils.isEmpty(place.getCountryName())) {
-                    errors.add("You need to supply an ISO-3166 country code, e.g. GB");
-                } else if (null == place.getLatitude() || null == place.getLongitude()) {
+                }
+                if (StringUtils.isEmpty(place.getCountryName())) {
+                    errors.add("You need to supply a country name, e.g. GB");
+                }
+                if (null == place.getLatitude() || null == place.getLongitude()) {
                     errors.add("You need to supply a valid latitude and longitude");
-                } else {
-                    Place savedPlace = repo.save(place);
-                    response.setHeader(HttpHeaders.LOCATION, "/places/"+savedPlace.getId());
                 }
             } else {
                 errors.add("You need to supply a valid place to save");
             }
             if (errors.isEmpty()) {
+                Place savedPlace = repo.save(place);
+                response.setHeader(HttpHeaders.LOCATION, "/places/"+savedPlace.getId());
                 response.setStatus(HttpServletResponse.SC_CREATED);
             } else {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
