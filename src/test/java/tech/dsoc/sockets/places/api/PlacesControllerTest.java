@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -24,22 +23,18 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
  * @author sih
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
 @WebAppConfiguration
+@SpringBootTest
 public class PlacesControllerTest {
 
 
@@ -53,7 +48,7 @@ public class PlacesControllerTest {
     private MediaType contentType = new MediaType(APPLICATION_JSON.getType(),
             APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
-    @Mock
+    @MockBean
     private PlaceRepo placeRepo;
 
 
@@ -209,6 +204,50 @@ public class PlacesControllerTest {
         Mockito.verify(placeRepo, never()).save(londonGb);
 
     }
+
+    @Test
+    public void saveShouldPersistValidRecords() throws Exception {
+
+        when(placeRepo.save(londonGb)).thenReturn(dbLondonGb);
+        mockMvc
+                .perform(post("/places")
+                        .content(mapper.writeValueAsString(londonGb))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .characterEncoding("utf-8"))
+        ;
+
+        Mockito.verify(placeRepo, times(1)).save(londonGb);
+    }
+
+
+    @Test
+    public void saveShouldReturnCreatedStatusCodesForValidRecords() throws Exception {
+        when(placeRepo.save(londonGb)).thenReturn(dbLondonGb);
+        mockMvc
+                .perform(post("/places")
+                        .content(mapper.writeValueAsString(londonGb))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .characterEncoding("utf-8"))
+                .andExpect(status().isCreated())
+        ;
+
+    }
+
+
+    @Test
+    public void saveShouldReturnTheCorrectLocationHeaderForValidRecords() throws Exception {
+        when(placeRepo.save(londonGb)).thenReturn(dbLondonGb);
+        String expectedLondonGbHeader  = "/places/"+dbLondonGb.getId();
+        mockMvc
+                .perform(post("/places")
+                        .content(mapper.writeValueAsString(londonGb))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .characterEncoding("utf-8"))
+                .andExpect(header().string("Location", expectedLondonGbHeader))
+        ;
+
+    }
+
 
 
     protected String json(Object o) throws IOException {
