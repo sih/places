@@ -34,9 +34,9 @@ public class PlacesController {
         try {
             p = repo.findById(id).orElse(null);
             if (null == p) {
-                String message = "Could not find place with id "+id;
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.getWriter().write(message);
+            } else {
+                response.setStatus(HttpServletResponse.SC_OK);
             }
         }
 

@@ -21,10 +21,12 @@ import tech.dsoc.sockets.places.ds.PlaceRepo;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
@@ -248,6 +250,32 @@ public class PlacesControllerTest {
 
     }
 
+    @Test
+    public void getShouldReturn404WhenNoSuchId() throws Exception {
+        Long noSuchId = 99L;
+        when(placeRepo.findById(noSuchId)).thenReturn(null);
+        mockMvc
+                .perform(get("/places{id}", noSuchId))
+                .andExpect(status().isNotFound())
+        ;
+    }
+
+
+    @Test
+    public void getShouldReturn200AndValidObjectWhenIdMatches() throws Exception {
+        when(placeRepo.findById(dbLondonGb.getId()))
+                .thenReturn(Optional.of(dbLondonGb))
+        ;
+        mockMvc
+                .perform(get("/places/{id}", dbLondonGb.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(dbLondonGb.getId().intValue()))
+                .andExpect(jsonPath("$.cityName").value(dbLondonGb.getCityName()))
+                .andExpect(jsonPath("$.countryName").value(dbLondonGb.getCountryName()))
+                .andExpect(jsonPath("$.latitude").value(dbLondonGb.getLatitude()))
+                .andExpect(jsonPath("$.longitude").value(dbLondonGb.getLongitude()))
+        ;
+    }
 
 
     protected String json(Object o) throws IOException {
